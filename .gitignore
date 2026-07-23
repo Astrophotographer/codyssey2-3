@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.py[cod]
+data/jobs/
+*.pem
+credentials*
+.DS_Store
+*.egg-info/
+.pytest_cache/

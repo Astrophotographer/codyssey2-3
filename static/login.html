@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인 · Aigraphers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body data-theme="clay" class="login-page">
+  <div class="grain" aria-hidden="true"></div>
+  <main class="login-shell">
+    <form class="login-card" method="post" action="/login" autocomplete="on">
+      <h1>Aigraphers</h1>
+      <p>로그인 후 사진 변환을 사용할 수 있습니다</p>
+      __ERROR__
+      <label class="field">
+        <span>아이디</span>
+        <input name="username" type="text" required autofocus autocomplete="username" />
+      </label>
+      <label class="field">
+        <span>비밀번호</span>
+        <input name="password" type="password" required autocomplete="current-password" />
+      </label>
+      <button class="btn primary" type="submit">로그인</button>
+    </form>
+  </main>
+</body>
+</html>
