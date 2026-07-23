@@ -212,12 +212,12 @@ main { max-width: 1100px; margin: 0 auto; padding: 12px 20px 40px; }
 }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn.primary {
-  background: var(--accent);
-  color: #fffaf8;
-  box-shadow: 0 8px 18px var(--accent-soft);
+  background: #2f2a27;
+  color: #f7f4f0;
+  box-shadow: 0 8px 18px rgba(47, 42, 39, 0.18);
 }
 .btn.primary:hover:not(:disabled) {
-  background: var(--accent-hover);
+  background: #1a1715;
   filter: none;
 }
 .btn.ghost {
@@ -841,13 +841,23 @@ body.profile-mode .grain { opacity: 0.04; }
   color: var(--muted);
   font-size: 14px;
 }
-.login-card .btn.primary { width: 100%; margin-top: 6px; }
+.login-card .btn.primary {
+  width: 100%;
+  margin-top: 6px;
+  background: #2f2a27;
+  color: #f7f4f0;
+  border: 0;
+  box-shadow: 0 10px 24px rgba(36, 31, 28, 0.16);
+}
+.login-card .btn.primary:hover:not(:disabled) {
+  background: #1a1715;
+}
 .login-error {
   margin: 0;
   padding: 10px 12px;
   border-radius: 10px;
-  background: #f3ebe8;
-  color: #6b3f3a;
+  background: #f1efec;
+  color: #5c534c;
   font-size: 13px;
   font-weight: 600;
 }
