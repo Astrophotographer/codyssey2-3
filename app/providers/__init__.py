@@ -19,15 +19,26 @@ def get_provider(name: str, settings: Settings) -> ImageProvider:
 
 
 def list_providers(settings: Settings) -> list[dict]:
+    local = LocalProvider(settings)
+    local_demo = local.uses_demo()
     return [
         {
             "id": "local",
             "name": "로컬 GPU",
-            "description": "기존처럼 로컬 Qwen / HTTP 워커로 변환",
-            "ready": LocalProvider(settings).is_configured(),
+            "description": (
+                "데모 PIL 필터 (GPU 워커 없음)"
+                if local_demo
+                else "기존처럼 로컬 Qwen / HTTP 워커로 변환"
+            ),
+            "ready": local.is_configured(),
             "recommended_for": "비용 없음 · 기존 머신 재사용",
             "billing": "local",
-            "cost_hint": "토큰 없음 · 무료",
+            "cost_hint": (
+                "데모 · 로컬 무료"
+                if local_demo
+                else "토큰 없음 · GPU 워커 · 무료"
+            ),
+            "mode": "demo" if local_demo else "worker",
         },
         {
             "id": "fal",

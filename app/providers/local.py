@@ -20,17 +20,17 @@ class LocalProvider(ImageProvider):
         self.settings = settings
 
     def is_configured(self) -> bool:
-        return bool(self.settings.local_worker_url) or self.settings.local_demo_mode
+        # Always selectable: real GPU worker when URL is set, otherwise demo filter.
+        return True
+
+    def uses_demo(self) -> bool:
+        return not bool(self.settings.local_worker_url)
 
     def edit(self, req: EditRequest) -> EditResult:
         if self.settings.local_worker_url:
             return self._via_worker(req)
-        if self.settings.local_demo_mode:
-            return self._demo_filter(req)
-        raise RuntimeError(
-            "로컬 프로바이더가 설정되지 않았습니다. "
-            "LOCAL_WORKER_URL 또는 LOCAL_DEMO_MODE=1 을 .env 에 넣으세요."
-        )
+        # Demo fallback when no worker (LOCAL_DEMO_MODE optional; always available)
+        return self._demo_filter(req)
 
     def _via_worker(self, req: EditRequest) -> EditResult:
         url = f"{self.settings.local_worker_url}/edit"

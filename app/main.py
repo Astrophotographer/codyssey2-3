@@ -20,8 +20,66 @@ static_dir = ROOT / "static"
 PUBLIC_PATHS = {
     "/login",
     "/styles.css",
+    "/app.js",
     "/favicon.ico",
 }
+
+_PROVIDER_SHORT = {
+    "local": "Local",
+    "fal": "Fal",
+    "openai": "OpenAI",
+}
+
+
+def _escape_attr(value: str) -> str:
+    return (
+        value.replace("&", "&amp;")
+        .replace('"', "&quot;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )
+
+
+def _provider_shell() -> tuple[str, str]:
+    """SSR chips so the API selector is visible even before/without JS."""
+    providers = list_providers(settings)
+    selected = settings.default_provider
+    ready = next((p for p in providers if p["id"] == selected and p.get("ready")), None)
+    if not ready:
+        ready = next((p for p in providers if p.get("ready")), None)
+    if ready:
+        selected = ready["id"]
+
+    chips: list[str] = []
+    for p in providers:
+        pid = p["id"]
+        is_on = pid == selected
+        is_ready = bool(p.get("ready"))
+        label = _PROVIDER_SHORT.get(pid, p.get("name") or pid)
+        title = (
+            p.get("cost_hint") or p.get("recommended_for") or p.get("description") or p.get("name") or label
+            if is_ready
+            else f"{p.get('name') or label} — API 키 필요"
+        )
+        disabled = " disabled" if not is_ready else ""
+        on_cls = " on" if is_on else ""
+        off = "<em>off</em>" if not is_ready else ""
+        chips.append(
+            '<button type="button" class="api-chip'
+            f'{on_cls}" data-provider="{_escape_attr(pid)}"{disabled} '
+            f'title="{_escape_attr(str(title))}">'
+            f"<span>{_escape_attr(str(label))}</span>{off}</button>"
+        )
+
+    selected_meta = next((p for p in providers if p["id"] == selected), None)
+    if selected_meta:
+        usage_now = (
+            f"{selected_meta.get('name') or selected} · "
+            f"{selected_meta.get('cost_hint') or '사용량 정보 없음'}"
+        )
+    else:
+        usage_now = "API를 선택하면 예상 과금이 표시됩니다"
+    return "".join(chips), usage_now
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -190,13 +248,30 @@ def get_output(job_id: str) -> FileResponse:
 
 
 @app.get("/")
-def index() -> FileResponse:
-    return FileResponse(static_dir / "index.html")
+def index() -> HTMLResponse:
+    html = (static_dir / "index.html").read_text(encoding="utf-8")
+    chips, usage_now = _provider_shell()
+    html = html.replace(
+        '<div class="api-switch-track" id="providerSeg" role="group" aria-label="이미지 엔진 선택"></div>',
+        '<div class="api-switch-track" id="providerSeg" role="group" aria-label="이미지 엔진 선택">'
+        f"{chips}</div>",
+        1,
+    )
+    html = html.replace(
+        "API를 선택하면 예상 과금이 표시됩니다",
+        usage_now,
+        1,
+    )
+    return HTMLResponse(html)
 
 
 @app.get("/app.js")
 def app_js() -> FileResponse:
-    return FileResponse(static_dir / "app.js", media_type="application/javascript")
+    return FileResponse(
+        static_dir / "app.js",
+        media_type="application/javascript",
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 @app.get("/styles.css")
