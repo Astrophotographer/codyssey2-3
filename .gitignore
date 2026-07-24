@@ -1,8 +1,9 @@
 .env
+.vercel
 .venv/
 __pycache__/
 *.py[cod]
-data/jobs/
+data/
 *.pem
 credentials*
 .DS_Store
