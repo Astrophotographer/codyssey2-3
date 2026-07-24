@@ -15,6 +15,7 @@ for _p in (_ROOT, _API):
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 try:
     from api.ai_providers import EditRequest, get_provider, list_providers
@@ -34,6 +35,14 @@ app.add_middleware(
 )
 
 settings = get_settings()
+
+# Fallback when Vercel routes all traffic through FastAPI (framework autodetection).
+_STATIC_ROOT = _ROOT / "public" if (_ROOT / "public" / "index.html").exists() else _ROOT
+
+
+@app.get("/")
+def index_page() -> FileResponse:
+    return FileResponse(_STATIC_ROOT / "index.html")
 
 
 @app.get("/api/health")
@@ -149,3 +158,26 @@ async def transform(
         "provider": provider_id,
         "style_id": style_id,
     }
+
+
+def _safe_static(subdir: str, filename: str) -> FileResponse:
+    base = (_STATIC_ROOT / subdir).resolve()
+    path = (base / filename).resolve()
+    if not str(path).startswith(str(base)) or not path.is_file():
+        raise HTTPException(status_code=404, detail="Not found")
+    return FileResponse(path)
+
+
+@app.get("/css/{filename}")
+def css_file(filename: str) -> FileResponse:
+    return _safe_static("css", filename)
+
+
+@app.get("/js/{filename}")
+def js_file(filename: str) -> FileResponse:
+    return _safe_static("js", filename)
+
+
+@app.get("/images/{filename}")
+def images_file(filename: str) -> FileResponse:
+    return _safe_static("images", filename)

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Aigraphers">
+  <rect width="64" height="64" rx="14" fill="#2f2a27"/>
+  <circle cx="32" cy="28" r="12" fill="none" stroke="#efeae4" stroke-width="4"/>
+  <circle cx="32" cy="28" r="4" fill="#efeae4"/>
+  <path d="M18 48c4-6 10-9 14-9s10 3 14 9" fill="none" stroke="#efeae4" stroke-width="4" stroke-linecap="round"/>
+</svg>

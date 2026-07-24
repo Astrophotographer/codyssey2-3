@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aigraphers · 사진 변환 작업실</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css?v=clay3" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+</head>
+<body data-theme="clay">
+  <div class="grain" aria-hidden="true"></div>
+  <div id="errorBanner" class="error-banner hidden" role="alert" aria-live="assertive"></div>
+
+  <header class="top" id="mainHeader">
+    <div class="brand">
+      <a href="/" class="brand-link" id="brandHome" aria-label="메인으로">
+        <h1 id="appTitle">Aigraphers</h1>
+        <p id="appSubtitle">인물 / 풍경을 고른 뒤 스타일로 변환합니다</p>
+      </a>
+    </div>
+    <div class="header-right">
+      <div class="api-block">
+        <div class="api-panel">
+          <div class="api-panel-top">
+            <span class="api-switch-label">API</span>
+            <div class="api-switch-track" id="providerSeg" role="group" aria-label="이미지 엔진 선택"></div>
+          </div>
+          <div class="api-usage" id="apiUsage" aria-live="polite">
+            <p class="api-usage-now" id="apiUsageNow">API를 선택하면 예상 과금이 표시됩니다</p>
+            <p class="api-usage-session" id="apiUsageSession">세션 · 0장 · 토큰 0</p>
+          </div>
+        </div>
+      </div>
+      <div class="steps" id="stepIndicator">
+        <span class="on" data-step="1">1 유형</span>
+        <span data-step="2">2 스타일</span>
+        <span data-step="3">3 업로드</span>
+        <span data-step="4">4 결과</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainDefault">
+    <section id="step-category" class="panel active">
+      <div class="panel-head">
+        <h2>무엇을 변환할까요?</h2>
+        <p>인물은 AI 프로필 사진 스타일 · 풍경은 장면 변환 모델을 씁니다.</p>
+      </div>
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+
+    <section id="step-style" class="panel">
+      <div class="panel-head">
+        <h2>스타일 선택</h2>
+        <p id="categoryLabel">카테고리: -</p>
+      </div>
+      <div class="style-grid" id="styleGrid"></div>
+      <div class="actions">
+        <button id="backCategory" class="btn ghost" type="button">유형 다시 고르기</button>
+        <button id="toUpload" class="btn primary" disabled>다음 · 사진 업로드</button>
+      </div>
+    </section>
+
+    <section id="step-upload" class="panel">
+      <div class="panel-head">
+        <h2>사진 업로드</h2>
+        <p id="selectedStyleLabel">선택한 스타일: -</p>
+      </div>
+      <label class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/*" capture="user" hidden />
+        <div class="dz-inner">
+          <strong>사진을 끌어다 놓거나 탭해서 선택</strong>
+          <span>JPEG / PNG / WebP · 최대 12MB</span>
+        </div>
+      </label>
+      <div class="preview-row hidden" id="previewRow">
+        <img id="previewImg" alt="업로드 미리보기" />
+        <div class="preview-meta">
+          <label class="field hidden" id="placeField">
+            <span>장소명 (마그넷 텍스트)</span>
+            <input id="placeInput" type="text" maxlength="40" placeholder="예: Rome, 제주, Paris" />
+          </label>
+          <label class="field">
+            <span>시드 (선택)</span>
+            <input id="seedInput" type="number" placeholder="비우면 자동" />
+          </label>
+          <button id="startJob" class="btn primary">이 스타일로 변환하기</button>
+          <button id="backStyle" class="btn ghost" type="button">스타일 다시 고르기</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="step-result" class="panel">
+      <div class="panel-head">
+        <h2>결과</h2>
+        <p id="jobStatus">대기 중…</p>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="compare hidden" id="compare">
+        <figure>
+          <figcaption>원본</figcaption>
+          <img id="resultInput" alt="원본" />
+        </figure>
+        <figure>
+          <figcaption>변환 결과</figcaption>
+          <img id="resultOutput" alt="결과" />
+        </figure>
+      </div>
+      <div class="actions">
+        <a id="downloadBtn" class="btn primary hidden" download="aigraphers-result.png">다운로드</a>
+        <button id="retryBtn" class="btn ghost hidden" type="button">같은 설정으로 다시</button>
+        <button id="newJobBtn" class="btn ghost" type="button">새 작업</button>
+      </div>
+      <pre id="jobMeta" class="meta hidden"></pre>
+    </section>
+  </main>
+
+  <div id="profileRoot" class="profile-root hidden">
+    <header class="profile-header">
+      <button type="button" class="profile-back" id="profileBack">← 유형 선택</button>
+      <div class="profile-brand">
+        <span class="profile-logo" aria-hidden="true">📸</span>
+        <div>
+          <h1>AI 프로필 사진</h1>
+          <p>셀카 한 장 · 4스텝 · 얼굴은 그대로</p>
+        </div>
+        <span class="profile-badge">⚡ 4스텝</span>
+      </div>
+    </header>
+
+    <div class="profile-shell">
+      <div class="profile-col">
+        <div class="profile-upload" id="profileDropzone">
+          <input type="file" id="profileFileInput" accept="image/jpeg,image/png,image/webp,image/*" capture="user" hidden />
+          <div class="profile-upload-empty" id="profileUploadEmpty">
+            <strong>셀카를 여기에 올리세요</strong>
+            <span>정면·밝은 셀카 한 장이면 충분해요</span>
+          </div>
+          <img id="profilePreview" class="profile-preview hidden" alt="업로드 미리보기" />
+        </div>
+
+        <p class="profile-flow-hint">1. 셀카 올리기 · 2. 스타일 클릭 (프로필 / 🧩픽셀 / 🎨4컷) · 3. 만들기</p>
+
+        <div class="profile-chips" id="profileChips"></div>
+
+        <div class="profile-tips">
+          <strong>💡 팁</strong>
+          <p>정면·밝은 셀카일수록 결과가 좋아요 · 클라우드 API는 최대 약 1분 걸릴 수 있어요</p>
+          <p class="profile-warn">⚠️ 프로필·이력서용 (여권·관공서 제출 불가)</p>
+        </div>
+
+        <button type="button" class="profile-run" id="profileRun" disabled>📸 만들기</button>
+      </div>
+
+      <div class="profile-col profile-out-col">
+        <div class="profile-out-head">
+          <span>결과</span>
+          <a id="profileDownload" class="profile-dl hidden" download="aigraphers-profile.png">저장</a>
+        </div>
+        <div class="profile-out-box" id="profileOutBox">
+          <div class="profile-loader hidden" id="profileLoader">
+            <div class="profile-spinner"></div>
+            <span id="profileLoaderText">AI가 만드는 중…</span>
+            <div class="profile-progress"><div id="profileProgressBar"></div></div>
+          </div>
+          <p class="profile-placeholder" id="profilePlaceholder">여기에 결과가 나옵니다</p>
+          <img id="profileResult" class="profile-result hidden" alt="프로필 결과" />
+        </div>
+        <figure class="profile-compare hidden" id="profileCompare">
+          <figcaption>원본</figcaption>
+          <img id="profileResultInput" alt="원본" />
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <footer id="mainFooter">
+    <span id="footerHint">로컬 · Fal(Qwen) · OpenAI 지원 · 한 장씩 변환 · 인물=2511 / 풍경=2509</span>
+  </footer>
+  <script src="/js/app.js"></script>
+</body>
+</html>
