@@ -7,10 +7,11 @@ Vercel 정적 프론트 + Python (FastAPI) 서버리스 API.
 
 ```
 aigraphers/
-  index.html          # UI
+  index.html          # UI (source of truth)
   css/styles.css
   js/app.js
   images/             # favicon 등
+  public/             # Vercel CDN mirror of the same UI assets
   api/
     index.py          # FastAPI app (Vercel entry)
     presets_data.py
