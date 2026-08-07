@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>운영·측정 · Aigraphers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css?v=clay6" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("aigraphers-theme");
+        if (t === "clay-dark" || t === "clay") document.documentElement.setAttribute("data-theme-boot", t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-theme="clay">
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="top" id="mainHeader">
+    <div class="brand">
+      <a href="/" class="brand-link" aria-label="메인으로">
+        <h1>Aigraphers</h1>
+        <p>운영 · UX 측정</p>
+      </a>
+    </div>
+    <nav class="site-nav" aria-label="주요 페이지">
+      <a href="/" class="site-nav-link">작업실</a>
+      <a href="/contact.html" class="site-nav-link">문의</a>
+      <a href="/ops.html" class="site-nav-link is-active">운영·측정</a>
+    </nav>
+    <div class="header-right">
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드 전환" title="테마 전환">
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+        <span class="theme-toggle-label" id="themeToggleLabel">다크</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <h1>운영 · UX 측정</h1>
+    <p class="lede">
+      사용자 입력 → AI 처리 → 저장/알림 흐름과, 개선 효과를 확인하는 측정 포인트를 한눈에 정리합니다.
+    </p>
+
+    <article class="page-card">
+      <h2>배포 URL · 3개 페이지</h2>
+      <ul>
+        <li><a href="https://aigraphers.vercel.app/">작업실</a> — 스타일 선택 · 업로드 · 변환</li>
+        <li><a href="https://aigraphers.vercel.app/contact.html">문의</a> — 사이트 폼 + 구글폼</li>
+        <li><a href="https://aigraphers.vercel.app/ops.html">운영·측정</a> — 본 페이지</li>
+      </ul>
+      <div class="page-links">
+        <a class="btn primary" href="https://aigraphers.vercel.app/api/health" target="_blank" rel="noopener">API health</a>
+        <a class="btn ghost" href="https://aigraphers.vercel.app/api/config" target="_blank" rel="noopener">API config</a>
+      </div>
+    </article>
+
+    <article class="page-card">
+      <h2>저장 / 알림 파이프라인</h2>
+      <p>문의·실행로그·서버온도·방문 이벤트가 n8n Webhook으로 전달되고 Google Sheets에 append 됩니다.</p>
+      <ul>
+        <li>시트: <a href="https://docs.google.com/spreadsheets/d/1O3ceQaqoNW9BDQrUwq4IRYovkLmT5k6AeQvUXj70Quk/edit" target="_blank" rel="noopener">Aigraphers Ops</a></li>
+        <li>구글폼: <a href="https://docs.google.com/forms/d/1ZNL9Qaj2AvpeGv3nZenqgHAPetGraDVsHWXlDWw2BpA/viewform" target="_blank" rel="noopener">문의 / 피드백</a></li>
+        <li>가이드: 리포지토리 <code>docs/n8n-google-sheets.md</code></li>
+      </ul>
+    </article>
+
+    <article class="page-card">
+      <h2>개선 효과를 확인하는 방법</h2>
+      <ul>
+        <li><strong>방문</strong> — theme / path / session → 다크모드 사용률·재방문</li>
+        <li><strong>실행로그</strong> — elapsed_sec, total_tokens, est_usd, result, provider</li>
+        <li><strong>서버온도</strong> — run_id로 실행과 조인</li>
+        <li><strong>문의 rating</strong> — 주관적 만족도</li>
+      </ul>
+      <p id="opsLiveHint" class="lede" style="margin-top:12px;margin-bottom:0">기능 플래그 확인 중…</p>
+    </article>
+
+    <article class="page-card">
+      <h2>API 문제 빠른 체크</h2>
+      <ul>
+        <li>Local — 데모 필터 (항상 동작)</li>
+        <li>OpenAI — <code>OPENAI_API_KEY</code> 필요</li>
+        <li>Fal — <code>FAL_KEY</code> + <strong>잔액</strong> 필요. 잔액 소진 시 402와 안내 메시지</li>
+      </ul>
+      <p>자세한 로그·재배포 절차는 README의 Troubleshooting 절을 참고하세요.</p>
+    </article>
+  </main>
+
+  <footer id="mainFooter">
+    <span>페이지 3/3 · 운영·측정</span>
+    <span id="visitHint" class="visit-hint" aria-live="polite"></span>
+  </footer>
+  <script src="/js/app.js?v=clay6"></script>
+  <script>
+    (async function () {
+      var el = document.getElementById("opsLiveHint");
+      try {
+        var res = await fetch("/api/config");
+        var data = await res.json();
+        var f = data.features || {};
+        el.textContent =
+          "실시간 features — contact: " + !!f.contact +
+          ", runlog: " + !!f.runlog +
+          ", visit: " + !!f.visit +
+          (data.google_form_url ? " · 구글폼 URL 연결됨" : " · 구글폼 URL 없음");
+      } catch (e) {
+        el.textContent = "config 조회 실패 — 배포/네트워크를 확인하세요.";
+      }
+    })();
+  </script>
+</body>
+</html>

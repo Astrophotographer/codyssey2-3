@@ -28,6 +28,12 @@ class Settings:
     fal_person_model: str = "fal-ai/qwen-image-edit-2511"
     fal_landscape_model: str = "fal-ai/qwen-image-edit-2509"
 
+    n8n_contact_webhook_url: str = ""
+    n8n_runlog_webhook_url: str = ""
+    n8n_visit_webhook_url: str = ""
+    google_form_url: str = ""
+    server_temp_c: str = ""
+
     @property
     def max_upload_bytes(self) -> int:
         return self.max_upload_mb * 1024 * 1024
@@ -46,4 +52,9 @@ def get_settings() -> Settings:
         fal_key=os.getenv("FAL_KEY", ""),
         fal_person_model=os.getenv("FAL_PERSON_MODEL", "fal-ai/qwen-image-edit-2511"),
         fal_landscape_model=os.getenv("FAL_LANDSCAPE_MODEL", "fal-ai/qwen-image-edit-2509"),
+        n8n_contact_webhook_url=os.getenv("N8N_CONTACT_WEBHOOK_URL", "").strip(),
+        n8n_runlog_webhook_url=os.getenv("N8N_RUNLOG_WEBHOOK_URL", "").strip(),
+        n8n_visit_webhook_url=os.getenv("N8N_VISIT_WEBHOOK_URL", "").strip(),
+        google_form_url=os.getenv("GOOGLE_FORM_URL", "").strip(),
+        server_temp_c=os.getenv("SERVER_TEMP_C", "").strip(),
     )

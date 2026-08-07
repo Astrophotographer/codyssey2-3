@@ -18,6 +18,21 @@ except ImportError:
     from presets_data import Preset
 
 
+def _friendly_fal_error(status_code: int, body: str) -> str:
+    text = (body or "")[:800]
+    low = text.lower()
+    if status_code in {402, 403} and (
+        "exhausted balance" in low or "user is locked" in low or "insufficient" in low
+    ):
+        return (
+            "Fal 잔액이 소진되었거나 계정이 잠겼습니다. "
+            "fal.ai/dashboard/billing 에서 충전하거나 OpenAI / Local API로 전환하세요."
+        )
+    if status_code == 401:
+        return "Fal API 키가 유효하지 않습니다. Vercel의 FAL_KEY를 확인하세요."
+    return f"Fal error {status_code}: {text}"
+
+
 @dataclass
 class EditRequest:
     image_path: Path
@@ -214,7 +229,7 @@ class FalProvider(ImageProvider):
         with httpx.Client(timeout=300.0) as client:
             res = client.post(submit_url, headers=headers, json=payload)
             if res.status_code >= 400:
-                raise RuntimeError(f"Fal error {res.status_code}: {res.text[:800]}")
+                raise RuntimeError(_friendly_fal_error(res.status_code, res.text))
             data = res.json()
 
         out_url = self._extract_image_url(data)

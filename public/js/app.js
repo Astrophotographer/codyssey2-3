@@ -75,6 +75,20 @@ const els = {
   apiUsageSession: document.getElementById("apiUsageSession"),
   footerHint: document.getElementById("footerHint"),
   brandHome: document.getElementById("brandHome"),
+  themeToggle: document.getElementById("themeToggle"),
+  themeToggleLabel: document.getElementById("themeToggleLabel"),
+  successBanner: document.getElementById("successBanner"),
+  contactForm: document.getElementById("contactForm"),
+  contactName: document.getElementById("contactName"),
+  contactEmail: document.getElementById("contactEmail"),
+  contactMessage: document.getElementById("contactMessage"),
+  contactRating: document.getElementById("contactRating"),
+  contactSubmit: document.getElementById("contactSubmit"),
+  contactStatus: document.getElementById("contactStatus"),
+  googleFormLink: document.getElementById("googleFormLink"),
+  googleFormEmbed: document.getElementById("googleFormEmbed"),
+  googleFormFrame: document.getElementById("googleFormFrame"),
+  visitHint: document.getElementById("visitHint"),
 };
 
 let bannerTimer = null;
@@ -101,12 +115,228 @@ function hideError() {
 
 els.errorBanner?.addEventListener("click", hideError);
 
+const THEME_KEY = "aigraphers-theme";
+const VISIT_COUNT_KEY = "aigraphers-visit-count";
+const SESSION_ID_KEY = "aigraphers-session-id";
+let successBannerTimer = null;
+
+function currentTheme() {
+  return document.body.getAttribute("data-theme") === "clay-dark" ? "clay-dark" : "clay";
+}
+
+function applyTheme(theme) {
+  const next = theme === "clay-dark" ? "clay-dark" : "clay";
+  document.body.setAttribute("data-theme", next);
+  document.documentElement.removeAttribute("data-theme-boot");
+  try {
+    localStorage.setItem(THEME_KEY, next);
+  } catch (_) {
+    /* ignore */
+  }
+  if (els.themeToggleLabel) {
+    els.themeToggleLabel.textContent = next === "clay-dark" ? "라이트" : "다크";
+  }
+  if (els.themeToggle) {
+    els.themeToggle.setAttribute(
+      "aria-label",
+      next === "clay-dark" ? "라이트 모드로 전환" : "다크 모드로 전환"
+    );
+  }
+}
+
+function initTheme() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem(THEME_KEY);
+  } catch (_) {
+    /* ignore */
+  }
+  applyTheme(saved === "clay-dark" ? "clay-dark" : "clay");
+}
+
+els.themeToggle?.addEventListener("click", () => {
+  applyTheme(currentTheme() === "clay-dark" ? "clay" : "clay-dark");
+});
+
+function showSuccess(message) {
+  const text = String(message || "완료되었습니다");
+  if (!els.successBanner) return;
+  els.successBanner.textContent = text;
+  els.successBanner.classList.remove("hidden", "is-pulse");
+  void els.successBanner.offsetWidth;
+  els.successBanner.classList.add("is-visible", "is-pulse");
+  if (successBannerTimer) clearTimeout(successBannerTimer);
+  successBannerTimer = setTimeout(hideSuccess, 4000);
+}
+
+function hideSuccess() {
+  if (!els.successBanner) return;
+  els.successBanner.classList.add("hidden");
+  els.successBanner.classList.remove("is-visible", "is-pulse");
+  els.successBanner.textContent = "";
+}
+
+function googleFormEmbedSrc(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  try {
+    const u = new URL(raw);
+    if (/docs\.google\.com$/i.test(u.hostname) || /\.google\.com$/i.test(u.hostname)) {
+      if (!u.searchParams.has("embedded")) u.searchParams.set("embedded", "true");
+      return u.toString();
+    }
+  } catch (_) {
+    /* ignore */
+  }
+  return raw;
+}
+
+function applyGoogleFormUrl(url) {
+  const href = String(url || "").trim();
+  if (!href) return;
+  if (els.googleFormLink) {
+    els.googleFormLink.href = href;
+    els.googleFormLink.classList.remove("hidden");
+  }
+  const embedSrc = googleFormEmbedSrc(href);
+  if (els.googleFormEmbed && els.googleFormFrame && embedSrc) {
+    els.googleFormFrame.src = embedSrc;
+    els.googleFormEmbed.hidden = false;
+    els.googleFormEmbed.classList.remove("hidden");
+  }
+}
+
+async function loadPublicConfig() {
+  try {
+    const res = await fetch("/api/config");
+    if (!res.ok) return;
+    const data = await res.json().catch(() => ({}));
+    if (data.google_form_url) applyGoogleFormUrl(data.google_form_url);
+  } catch (_) {
+    /* config is optional */
+  }
+}
+
+els.successBanner?.addEventListener("click", hideSuccess);
+
+function pulseResult(el) {
+  if (!el) return;
+  el.classList.remove("result-pop");
+  void el.offsetWidth;
+  el.classList.add("result-pop");
+}
+
+async function recordVisit() {
+  let count = 0;
+  try {
+    count = Number(localStorage.getItem(VISIT_COUNT_KEY) || "0") || 0;
+  } catch (_) {
+    count = 0;
+  }
+  count += 1;
+  try {
+    localStorage.setItem(VISIT_COUNT_KEY, String(count));
+  } catch (_) {
+    /* ignore */
+  }
+
+  if (els.visitHint) {
+    els.visitHint.textContent = count <= 1 ? "방문 기록됨" : `방문 기록됨 · ${count}회 (이 브라우저)`;
+  }
+
+  try {
+    const res = await fetch("/api/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        path: location.pathname || "/",
+        referrer: document.referrer || "",
+        theme: currentTheme(),
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data.session_id) {
+        try {
+          localStorage.setItem(SESSION_ID_KEY, data.session_id);
+        } catch (_) {
+          /* ignore */
+        }
+      }
+    }
+  } catch (_) {
+    /* visit logging is best-effort */
+  }
+}
+
+async function submitContact(event) {
+  event.preventDefault();
+  const name = els.contactName?.value?.trim() || "";
+  const message = els.contactMessage?.value?.trim() || "";
+  const email = els.contactEmail?.value?.trim() || "";
+  const ratingRaw = els.contactRating?.value || "";
+  const rating = ratingRaw ? Number(ratingRaw) : null;
+
+  if (els.contactStatus) {
+    els.contactStatus.textContent = "";
+    els.contactStatus.classList.remove("is-ok", "is-err");
+  }
+
+  if (!name || !message) {
+    const msg = "이름과 문의 내용을 입력해 주세요";
+    if (els.contactStatus) {
+      els.contactStatus.textContent = msg;
+      els.contactStatus.classList.add("is-err");
+    }
+    showError(msg);
+    return;
+  }
+
+  if (els.contactSubmit) els.contactSubmit.disabled = true;
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, message, rating }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = detailFromErrorBody(data) || "문의 전송에 실패했습니다";
+      if (els.contactStatus) {
+        els.contactStatus.textContent = msg;
+        els.contactStatus.classList.add("is-err");
+      }
+      showError(msg);
+      return;
+    }
+    if (els.contactStatus) {
+      els.contactStatus.textContent = "감사합니다! 문의가 접수되었습니다.";
+      els.contactStatus.classList.add("is-ok");
+    }
+    showSuccess("문의가 접수되었습니다");
+    els.contactForm?.reset();
+    if (data.google_form_url) applyGoogleFormUrl(data.google_form_url);
+  } catch (e) {
+    const msg = e?.message || "네트워크 오류가 발생했습니다";
+    if (els.contactStatus) {
+      els.contactStatus.textContent = msg;
+      els.contactStatus.classList.add("is-err");
+    }
+    showError(msg);
+  } finally {
+    if (els.contactSubmit) els.contactSubmit.disabled = false;
+  }
+}
+
+els.contactForm?.addEventListener("submit", submitContact);
+
 function showStep(n) {
   state.profileMode = false;
   document.body.classList.remove("profile-mode");
   els.mainHeader.classList.remove("hidden");
   els.mainDefault.classList.remove("hidden");
   els.mainFooter.classList.remove("hidden");
+  document.getElementById("contactSection")?.classList.remove("hidden");
   els.profileRoot.classList.add("hidden");
 
   els.stepCategory.classList.toggle("active", n === 1);
@@ -124,6 +354,7 @@ function showProfileStudio() {
   els.mainHeader.classList.add("hidden");
   els.mainDefault.classList.add("hidden");
   els.mainFooter.classList.add("hidden");
+  document.getElementById("contactSection")?.classList.add("hidden");
   els.profileRoot.classList.remove("hidden");
   updateProfileRunState();
 }
@@ -374,7 +605,9 @@ async function loadProviders() {
 }
 
 async function loadBootstrap() {
-  await loadProviders();
+  initTheme();
+  recordVisit();
+  await Promise.all([loadProviders(), loadPublicConfig()]);
   const res = await fetch("/api/presets");
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -421,6 +654,7 @@ function setProfileFile(file) {
 }
 
 function wireDropzone(zone, input, onFile) {
+  if (!zone || !input) return;
   zone.addEventListener("click", () => input.click());
   input.addEventListener("change", () => onFile(input.files?.[0]));
   ["dragenter", "dragover"].forEach((ev) => {
@@ -438,6 +672,9 @@ function wireDropzone(zone, input, onFile) {
   zone.addEventListener("drop", (e) => onFile(e.dataTransfer.files?.[0]));
 }
 
+const isAtelierPage = Boolean(els.mainDefault && els.categoryGrid);
+
+if (isAtelierPage) {
 wireDropzone(els.dropzone, els.fileInput, setFile);
 wireDropzone(els.profileDropzone, els.profileFileInput, setProfileFile);
 
@@ -485,6 +722,7 @@ els.newJobBtn.addEventListener("click", () => {
   els.toUpload.disabled = true;
   showStep(1);
 });
+} // end isAtelierPage early listeners
 
 function goHome(e) {
   if (e) e.preventDefault();
@@ -512,10 +750,6 @@ function goHome(e) {
 }
 
 els.brandHome?.addEventListener("click", goHome);
-els.retryBtn.addEventListener("click", () => {
-  if (state.file) startJob();
-  else showStep(3);
-});
 
 function detailFromErrorBody(err) {
   if (!err) return null;
@@ -656,6 +890,8 @@ async function startJob() {
       els.downloadBtn.href = j.resultUrl;
       els.downloadBtn.classList.remove("hidden");
       els.retryBtn.classList.remove("hidden");
+      pulseResult(els.compare);
+      showSuccess(j.elapsed_sec ? `변환 완료 · ${j.elapsed_sec}s` : "변환 완료");
       if (j.meta) {
         els.jobMeta.classList.remove("hidden");
         els.jobMeta.textContent = JSON.stringify(j.meta, null, 2);
@@ -664,57 +900,73 @@ async function startJob() {
   });
 }
 
-els.startJob.addEventListener("click", startJob);
-
-els.profileRun.addEventListener("click", async () => {
-  if (!state.file) {
-    showError("사진을 먼저 업로드해 주세요");
-    return;
-  }
-  if (!state.styleId) {
-    showError("스타일을 먼저 선택해 주세요");
-    return;
-  }
-
-  hideError();
-  els.profileRun.disabled = true;
-  els.profileLoader.classList.remove("hidden");
-  els.profilePlaceholder.classList.add("hidden");
-  els.profileResult.classList.add("hidden");
-  els.profileDownload.classList.add("hidden");
-  els.profileCompare.classList.add("hidden");
-  els.profileProgressBar.style.width = "8%";
-  els.profileLoaderText.textContent = "변환 요청 중…";
-
-  await transformImage((j) => {
-    if (j.failed) {
-      els.profileLoader.classList.add("hidden");
-      els.profilePlaceholder.classList.remove("hidden");
-      els.profileLoaderText.textContent = `실패: ${j.error}`;
-      updateProfileRunState();
-      return;
-    }
-    if (j.status === "running") {
-      els.profileProgressBar.style.width = `${j.progress || 20}%`;
-      els.profileLoaderText.textContent = "AI가 만드는 중…";
-    }
-    if (j.status === "done") {
-      els.profileLoader.classList.add("hidden");
-      els.profileResult.src = j.resultUrl;
-      els.profileResult.classList.remove("hidden");
-      els.profileDownload.href = j.resultUrl;
-      els.profileDownload.classList.remove("hidden");
-      els.profileResultInput.src = j.inputUrl;
-      els.profileCompare.classList.remove("hidden");
-      els.profileLoaderText.textContent = j.elapsed_sec ? `완료 · ${j.elapsed_sec}s` : "완료";
-      updateProfileRunState();
-    }
+if (isAtelierPage) {
+  els.retryBtn.addEventListener("click", () => {
+    if (state.file) startJob();
+    else showStep(3);
   });
 
-  updateProfileRunState();
-});
+  els.startJob.addEventListener("click", startJob);
 
-loadBootstrap().catch((e) => {
-  showError(e.message || "초기 로드 실패");
-  els.categoryGrid.innerHTML = `<p style="color:#5c534c">로드 실패: ${e.message}</p>`;
-});
+  els.profileRun.addEventListener("click", async () => {
+    if (!state.file) {
+      showError("사진을 먼저 업로드해 주세요");
+      return;
+    }
+    if (!state.styleId) {
+      showError("스타일을 먼저 선택해 주세요");
+      return;
+    }
+
+    hideError();
+    els.profileRun.disabled = true;
+    els.profileLoader.classList.remove("hidden");
+    els.profilePlaceholder.classList.add("hidden");
+    els.profileResult.classList.add("hidden");
+    els.profileDownload.classList.add("hidden");
+    els.profileCompare.classList.add("hidden");
+    els.profileProgressBar.style.width = "8%";
+    els.profileLoaderText.textContent = "변환 요청 중…";
+
+    await transformImage((j) => {
+      if (j.failed) {
+        els.profileLoader.classList.add("hidden");
+        els.profilePlaceholder.classList.remove("hidden");
+        els.profileLoaderText.textContent = `실패: ${j.error}`;
+        updateProfileRunState();
+        return;
+      }
+      if (j.status === "running") {
+        els.profileProgressBar.style.width = `${j.progress || 20}%`;
+        els.profileLoaderText.textContent = "AI가 만드는 중…";
+      }
+      if (j.status === "done") {
+        els.profileLoader.classList.add("hidden");
+        els.profileResult.src = j.resultUrl;
+        els.profileResult.classList.remove("hidden");
+        els.profileDownload.href = j.resultUrl;
+        els.profileDownload.classList.remove("hidden");
+        els.profileResultInput.src = j.inputUrl;
+        els.profileCompare.classList.remove("hidden");
+        els.profileLoaderText.textContent = j.elapsed_sec ? `완료 · ${j.elapsed_sec}s` : "완료";
+        pulseResult(els.profileResult);
+        showSuccess(j.elapsed_sec ? `변환 완료 · ${j.elapsed_sec}s` : "변환 완료");
+        updateProfileRunState();
+      }
+    });
+
+    updateProfileRunState();
+  });
+
+  loadBootstrap().catch((e) => {
+    showError(e.message || "초기 로드 실패");
+    if (els.categoryGrid) {
+      els.categoryGrid.innerHTML = `<p style="color:#5c534c">로드 실패: ${e.message}</p>`;
+    }
+  });
+} else {
+  // contact.html / ops.html — theme, visit, config, contact form only
+  initTheme();
+  recordVisit();
+  loadPublicConfig();
+}

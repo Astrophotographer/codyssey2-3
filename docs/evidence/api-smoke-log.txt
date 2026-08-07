@@ -1,0 +1,18 @@
+# Aigraphers API smoke — 2026-08-07T10:04:04.797799Z
+
+## GET /api/health
+{"ok":true,"default_provider":"openai","providers":[{"id":"local","name":"로컬 GPU","description":"데모 PIL 필터 (GPU 워커 없음)","ready":true,"recommended_for":"비용 없음 · 기존 머신 재사용","billing":"local","cost_hint":"데모 · 로컬 무료","mode":"demo"},{"id":"fal","name":"Fal (Qwen)","description":"지금 쓰는 Qwen-Image-Edit와 동일 계열 · 추천","ready":true,"recommended_for":"퀄리티·가격 균형 · Aigraphers와 가장 비슷","billing":"per_image","cost_hint":"약 $0.03–0.05 / 장 (토큰 단위 아님)","est_usd_per_image":0.04},{"id":"openai","name":"OpenAI","description":"gpt-image 편집 API","ready":true,"recommended_for":"지시 따르기·상용 안정성","billing":"tokens","cost_hint":"입력·출력 토큰 + 대략 비용 표시 (gpt-image-1 기준)"}]}
+
+## GET /api/config
+{"google_form_url":"https://docs.google.com/forms/d/1ZNL9Qaj2AvpeGv3nZenqgHAPetGraDVsHWXlDWw2BpA/viewform","features":{"contact":true,"runlog":true,"visit":true}}
+
+## POST transform local
+{"ok": true, "provider": "local", "elapsed_sec": 0.0}
+
+## POST transform fal
+{"detail":"Fal 잔액이 소진되었거나 계정이 잠겼습니다. fal.ai/dashboard/billing 에서 충전하거나 OpenAI / Local API로 전환하세요."}
+HTTP 402
+
+
+## Note
+Fal 잔액 소진 시 한국어 안내(402). OpenAI/Local은 정상. DEFAULT_PROVIDER=openai 권장.

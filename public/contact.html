@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>문의 · Aigraphers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css?v=clay6" />
+  <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("aigraphers-theme");
+        if (t === "clay-dark" || t === "clay") document.documentElement.setAttribute("data-theme-boot", t);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body data-theme="clay">
+  <div class="grain" aria-hidden="true"></div>
+  <div id="errorBanner" class="error-banner hidden" role="alert" aria-live="assertive"></div>
+  <div id="successBanner" class="success-banner hidden" role="status" aria-live="polite"></div>
+
+  <header class="top" id="mainHeader">
+    <div class="brand">
+      <a href="/" class="brand-link" aria-label="메인으로">
+        <h1>Aigraphers</h1>
+        <p>문의 / 피드백</p>
+      </a>
+    </div>
+    <nav class="site-nav" aria-label="주요 페이지">
+      <a href="/" class="site-nav-link">작업실</a>
+      <a href="/contact.html" class="site-nav-link is-active">문의</a>
+      <a href="/ops.html" class="site-nav-link">운영·측정</a>
+    </nav>
+    <div class="header-right">
+      <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드 전환" title="테마 전환">
+        <span class="theme-toggle-icon" aria-hidden="true">◐</span>
+        <span class="theme-toggle-label" id="themeToggleLabel">다크</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <h1>문의 / 피드백</h1>
+    <p class="lede">
+      사이트 폼 → n8n → Google Sheets 로 저장됩니다. 구글폼은 병렬 수집 경로입니다.
+    </p>
+
+    <section class="contact-section" id="contactSection" aria-labelledby="contactTitle" style="padding:0;max-width:none;margin:0">
+      <div class="contact-inner">
+        <div class="panel-head">
+          <h2 id="contactTitle">메시지 남기기</h2>
+          <p>이름·문의 내용은 필수입니다. 만족도(1–5)는 UX 측정에 사용합니다.</p>
+        </div>
+        <form id="contactForm" class="contact-form" novalidate>
+          <label class="field">
+            <span>이름 <em>*</em></span>
+            <input id="contactName" name="name" type="text" maxlength="80" required autocomplete="name" placeholder="홍길동" />
+          </label>
+          <label class="field">
+            <span>이메일</span>
+            <input id="contactEmail" name="email" type="email" maxlength="120" autocomplete="email" placeholder="you@example.com" />
+          </label>
+          <label class="field contact-message">
+            <span>문의 내용 <em>*</em></span>
+            <textarea id="contactMessage" name="message" rows="4" maxlength="2000" required placeholder="문의나 피드백을 적어 주세요"></textarea>
+          </label>
+          <label class="field">
+            <span>만족도</span>
+            <select id="contactRating" name="rating">
+              <option value="">선택 안 함</option>
+              <option value="5">5 · 최고</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1 · 별로</option>
+            </select>
+          </label>
+          <div class="contact-actions">
+            <button type="submit" class="btn primary" id="contactSubmit">보내기</button>
+            <a id="googleFormLink" class="btn ghost hidden" href="#" target="_blank" rel="noopener noreferrer">구글폼으로도 남기기</a>
+          </div>
+          <p id="contactStatus" class="contact-status" role="status" aria-live="polite"></p>
+        </form>
+        <div id="googleFormEmbed" class="google-form-embed hidden" hidden>
+          <p class="google-form-embed-label">구글폼 병렬 응답</p>
+          <iframe id="googleFormFrame" title="Google Form" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="mainFooter">
+    <span>페이지 2/3 · 문의</span>
+    <span id="visitHint" class="visit-hint" aria-live="polite"></span>
+  </footer>
+  <script src="/js/app.js?v=clay6"></script>
+</body>
+</html>

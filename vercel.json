@@ -7,7 +7,7 @@
   "functions": {
     "api/index.py": {
       "maxDuration": 60,
-      "includeFiles": "{index.html,css/**,js/**,images/**,api/**}"
+      "includeFiles": "{index.html,contact.html,ops.html,css/**,js/**,images/**,api/**,public/**}"
     }
   }
 }
