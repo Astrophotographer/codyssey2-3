@@ -1,83 +1,40 @@
-Vercel CLI 58.7.1 (Node.js 25.7.0)
-Retrieving project…
-Deploying skcksdnr2-6055s-projects/aigraphers
-Uploading [--------------------] (0.0B/1.1MB)
-Uploading [=====---------------] (277.9KB/1.1MB)
-Uploading [==========----------] (560.3KB/1.1MB)
-Uploading [===============-----] (832.3KB/1.1MB)
-Uploading [====================] (1.1MB/1.1MB)
-  Inspect         https://vercel.com/skcksdnr2-6055s-projects/aigraphers/CyePJwmFVPjfyRDBVHuByFDKDtmU
-  Production      https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app
-Building…
-Building…
-Running build in Washington, D.C., USA (East) – iad1
-Build machine configuration: 2 cores, 8 GB
-Retrieving list of deployment files...
-Downloading 57 deployment files...
-Restored build cache from previous deployment (CMU2BEbpzjRBUjuKBaBN5n1vbquc)
-Running "vercel build"
-Vercel CLI 58.1.0
-No Python version specified in .python-version, pyproject.toml, or Pipfile.lock. Using python version: 3.12
-Using uv 0.10.11
-Installing required dependencies from requirements.txt...
-Compiling Python bytecode...
-Build Completed in /vercel/output [3s]
-Deploying outputs...
-[2K[1A[2K[G  Production      https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app
-Completing…
-▲ Aliased         https://aigraphers.vercel.app
-{
-  "status": "ok",
-  "deployment": {
-    "id": "dpl_CyePJwmFVPjfyRDBVHuByFDKDtmU",
-    "url": "https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app",
-    "inspectorUrl": "https://vercel.com/skcksdnr2-6055s-projects/aigraphers/CyePJwmFVPjfyRDBVHuByFDKDtmU",
-    "readyState": "READY",
-    "target": "production",
-    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_CyePJwmFVPjfyRDBVHuByFDKDtmU"
-  },
-  "message": "Deployment aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app ready.",
-  "next": [
-    {
-      "command": "vercel curl https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app",
-      "when": "Verify deployment, including when Deployment Protection is enabled"
-    },
-    {
-      "command": "vercel inspect aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app",
-      "when": "Inspect deployment"
-    },
-    {
-      "command": "vercel deploy --prod",
-      "when": "Promote to production"
-    }
-  ]
-}
+# Aigraphers deploy evidence — 2026-08-10T07:02:26.238410Z
 
-=== vercel inspect (post-deploy) ===
-Vercel CLI 58.7.1 (Node.js 25.7.0)
+## vercel ls
+https://aigraphers-4t1l83foa-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-7izesyqvv-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-ivptlsqg9-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-ntf6h2rzj-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-lppcpfhik-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-2vhjuce31-skcksdnr2-6055s-projects.vercel.app
+https://aigraphers-gepifyiif-skcksdnr2-6055s-projects.vercel.app
+
+npm warn exec The following package was not found and will be installed: vercel@58.9.0
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@renovatebot/pep440@4.2.1',
+npm warn EBADENGINE   required: { node: '^20.9.0 || ^22.11.0 || ^24', pnpm: '^10.0.0' },
+npm warn EBADENGINE   current: { node: 'v25.7.0', npm: '11.10.1' }
+npm warn EBADENGINE }
+Vercel CLI 58.9.0 (Node.js 25.7.0)
+Retrieving project…
+Fetching deployments in skcksdnr2-6055s-projects
+> Deployments for skcksdnr2-60
+
+## vercel inspect aigraphers.vercel.app
+
+Vercel CLI 58.9.0 (Node.js 25.7.0)
 Fetching deployment "aigraphers.vercel.app" in skcksdnr2-6055s-projects
-> Fetched deployment "aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app" in skcksdnr2-6055s-projects [589ms]
+> Fetched deployment "aigraphers-4t1l83foa-skcksdnr2-6055s-projects.vercel.app" in skcksdnr2-6055s-projects [594ms]
 
   General
 
-    id		dpl_CyePJwmFVPjfyRDBVHuByFDKDtmU
+    id		dpl_Emz8tm4NyGA93XCLZ2E8ogpxBttd
     name	aigraphers
     target	production
     status	● Ready
-    url		https://aigraphers-ogxcd6naw-skcksdnr2-6055s-projects.vercel.app
-    created	Fri Aug 07 2026 19:03:01 GMT+0900 (Korean Standard Time) [1m ago]
+    url		https://aigraphers-4t1l83foa-skcksdnr2-6055s-projects.vercel.app
+    created	Fri Aug 07 2026 19:13:40 GMT+0900 (Korean Standard Time) [3d ago]
 
 
   Aliases
-
-    ╶ https://aigraphers.vercel.app
-    ╶ https://aigraphers-skcksdnr2-6055s-projects.vercel.app
-    ╶ https://aigraphers-skcksdnr2-6055-skcksdnr2-6055s-projects.vercel.app
-    
-
-  Builds
-
-    ┌ .        [0ms]
-    └── λ api/index (19.02MB) [iad1]
-    
-

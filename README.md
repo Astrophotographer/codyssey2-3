@@ -3,17 +3,26 @@
 사진 업로드 → 스타일 프리셋 → AI 변환 (Local / Fal / OpenAI).  
 Vercel 정적 프론트 + Python (FastAPI) 서버리스 API.
 
+> **과제 제출용 한눈에 보기:** [docs/과제-보완체크리스트.md](docs/과제-보완체크리스트.md)  
+> (배포 URL · 3페이지 · 기획서 PDF · 스크린샷/로그 · Troubleshooting · 비용개선 · 유출대응 · 프레임워크 분석)
+
 ## 배포 URL · 주요 3페이지
 
-| # | 페이지 | URL |
-|---|--------|-----|
-| 1 | 작업실 (변환) | https://aigraphers.vercel.app/ |
-| 2 | 문의 / 피드백 | https://aigraphers.vercel.app/contact.html |
-| 3 | 운영 · 측정 | https://aigraphers.vercel.app/ops.html |
+| # | 페이지 | URL | 스크린샷 |
+|---|--------|-----|----------|
+| 1 | 작업실 (변환) | https://aigraphers.vercel.app/ | [docs/evidence/01-atelier.jpg](docs/evidence/01-atelier.jpg) |
+| 2 | 문의 / 피드백 | https://aigraphers.vercel.app/contact.html | [docs/evidence/02-contact.jpg](docs/evidence/02-contact.jpg) |
+| 3 | 운영 · 측정 | https://aigraphers.vercel.app/ops.html | [docs/evidence/03-ops.jpg](docs/evidence/03-ops.jpg) |
 
 API 스모크: [health](https://aigraphers.vercel.app/api/health) · [config](https://aigraphers.vercel.app/api/config) · [providers](https://aigraphers.vercel.app/api/providers)
 
-증빙(스크린샷·배포 로그·기획서): [`docs/evidence/`](docs/evidence/) · [`docs/aigraphers-기획서.pdf`](docs/aigraphers-기획서.pdf)
+| 증빙 | 경로 |
+|------|------|
+| 기획서 PDF | [docs/aigraphers-기획서.pdf](docs/aigraphers-기획서.pdf) |
+| 스크린샷·로그 폴더 | [docs/evidence/](docs/evidence/) |
+| API 로그 | [docs/evidence/api-smoke-log.txt](docs/evidence/api-smoke-log.txt) |
+| 배포 로그 | [docs/evidence/deploy-log.txt](docs/evidence/deploy-log.txt) |
+| 보완 체크리스트 | [docs/과제-보완체크리스트.md](docs/과제-보완체크리스트.md) |
 
 ## Folder structure
 
